@@ -1,25 +1,36 @@
-FROM debian:9
+FROM ubuntu:latest
 
 MAINTAINER Ivan Ermilov <ivan.s.ermilov@gmail.com>
 MAINTAINER Giannis Mouchakis <gmouchakis@iit.demokritos.gr>
 
-RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+
+RUN apt-get update && apt -y upgrade && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
       openjdk-8-jdk \
       net-tools \
       curl \
       netcat \
       gnupg \
       libsnappy-dev \
-    && rm -rf /var/lib/apt/lists/*
-      
+      wget\
+      python3-pip \
+     build-essential \
+    libssl-dev \
+    libffi-dev \
+    python3-dev \
+    && rm -rf /var/lib/apt/lists/*pyhto
+
+#RUN apt install build-essential zlib1g-dev libncurses5-dev libgdbm-dev libnss3-dev libssl-dev libsqlite3-dev libreadline-dev libffi-dev curl libbz2-dev -y
+#RUN wget https://www.python.org/ftp/python/3.9.1/Python-3.9.1.tgz
+#RUN tar -xf Python-3.9.1.tgz
+#RUN cd Python-3.9.1 && ./configure --enable-optimizations && make -j 2 && make altinstall
+
 ENV JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/
 
-RUN curl -O https://dist.apache.org/repos/dist/release/hadoop/common/KEYS
-
+RUN curl -O https://downloads.apache.org/hadoop/common/KEYS
 RUN gpg --import KEYS
 
-ENV HADOOP_VERSION 3.2.1
-ENV HADOOP_URL https://www.apache.org/dist/hadoop/common/hadoop-$HADOOP_VERSION/hadoop-$HADOOP_VERSION.tar.gz
+ENV HADOOP_VERSION 3.2.3
+ENV HADOOP_URL https://downloads.apache.org/hadoop/common/hadoop-$HADOOP_VERSION/hadoop-$HADOOP_VERSION.tar.gz
 
 RUN set -x \
     && curl -fSL "$HADOOP_URL" -o /tmp/hadoop.tar.gz \

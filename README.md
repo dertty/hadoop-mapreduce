@@ -1,63 +1,39 @@
-[![Gitter chat](https://badges.gitter.im/gitterHQ/gitter.png)](https://gitter.im/big-data-europe/Lobby)
-
-# Changes
-
-Version 2.0.0 introduces uses wait_for_it script for the cluster startup
-
-# Hadoop Docker
-
-## Supported Hadoop Versions
-See repository branches for supported hadoop versions
-
-## Quick Start
-
-To deploy an example HDFS cluster, run:
+# HW 
+## Блок 1. Развертывание локального кластера Hadoop
+### Развернуть локальный кластер в конфигурации 1 NN, 3 DN + NM, 1 RM, 1 History server
+![img.png](img.png)  
+![img_4.png](img_4.png)  
+### Изучить настройки и состояние NM и RM в веб-интерфейсе
+![img_2.png](img_2.png)  
+### Сделать скриншоты NN и RM, добавить в репозиторий
+![img_1.png](img_1.png)  
+![img_9.png](img_9.png)  
+## Блок 2. Работа с HDFS
+### Выполните задания, записав выполненные команды последовательно в текстовый файл
+Текстовый файл тут: **block2_commands.txt**
+#### См. флаги “-mkdir” и “-touchz“  
+##### 1 & 2  
+![img_5.png](img_5.png)  
+##### 3  
+Trash папка это /user/<username>/.Trash/Current, туда падают файлы после удаление, пока fs.trash.interval не истечёт. Чтобы скипнуть, нужно сделать --skipTrash.
+##### 4, 5, 6
+![img_6.png](img_6.png)  
+#### См. флаги “-put”, “-cat”, “-tail”, “-cp”
+##### 1, 2, 3, 4, 5
+Файл с тектом ошибки, поэтому выглядит не очень:(
+![img_7.png](img_7.png)  
+![img_8.png](img_8.png)  
+## Блок 3. Написание map reduce на Python
+Среднее и дисперсия стандартным способом: 152.7206871868289 и 240.15416974718727
 ```
-  docker-compose up
+print(pd.read_csv('AB_NYC_2019.csv')['price'].dropna().mean())
 ```
+Среднее посчитанное MR: 152.7206871868289
+![img_10.png](img_10.png)  
+Код и outputs в **block3/**
 
-Run example wordcount job:
+# Запуск
 ```
-  make wordcount
+make build
+docker compose up
 ```
-
-Or deploy in swarm:
-```
-docker stack deploy -c docker-compose-v3.yml hadoop
-```
-
-`docker-compose` creates a docker network that can be found by running `docker network list`, e.g. `dockerhadoop_default`.
-
-Run `docker network inspect` on the network (e.g. `dockerhadoop_default`) to find the IP the hadoop interfaces are published on. Access these interfaces with the following URLs:
-
-* Namenode: http://<dockerhadoop_IP_address>:9870/dfshealth.html#tab-overview
-* History server: http://<dockerhadoop_IP_address>:8188/applicationhistory
-* Datanode: http://<dockerhadoop_IP_address>:9864/
-* Nodemanager: http://<dockerhadoop_IP_address>:8042/node
-* Resource manager: http://<dockerhadoop_IP_address>:8088/
-
-## Configure Environment Variables
-
-The configuration parameters can be specified in the hadoop.env file or as environmental variables for specific services (e.g. namenode, datanode etc.):
-```
-  CORE_CONF_fs_defaultFS=hdfs://namenode:8020
-```
-
-CORE_CONF corresponds to core-site.xml. fs_defaultFS=hdfs://namenode:8020 will be transformed into:
-```
-  <property><name>fs.defaultFS</name><value>hdfs://namenode:8020</value></property>
-```
-To define dash inside a configuration parameter, use triple underscore, such as YARN_CONF_yarn_log___aggregation___enable=true (yarn-site.xml):
-```
-  <property><name>yarn.log-aggregation-enable</name><value>true</value></property>
-```
-
-The available configurations are:
-* /etc/hadoop/core-site.xml CORE_CONF
-* /etc/hadoop/hdfs-site.xml HDFS_CONF
-* /etc/hadoop/yarn-site.xml YARN_CONF
-* /etc/hadoop/httpfs-site.xml HTTPFS_CONF
-* /etc/hadoop/kms-site.xml KMS_CONF
-* /etc/hadoop/mapred-site.xml  MAPRED_CONF
-
-If you need to extend some other configuration file, refer to base/entrypoint.sh bash script.

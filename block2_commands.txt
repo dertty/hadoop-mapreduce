@@ -1,0 +1,18 @@
+(base) user@user-ubuntu-pc:~/PycharmProjects/docker-hadoop$ sudo docker exec -it namenode bash
+root@79499e92701c:/# hdfs dfs -mkdir /my_dir
+root@79499e92701c:/# hdfs dfs -mkdir /my_dir/another_dir
+root@79499e92701c:/# hdfs dfs -touchz /my_dir/another_dir/emptyfile
+root@79499e92701c:/# hdfs dfs -rm -r /my_dir
+(base) user@user-ubuntu-pc:~/PycharmProjects/docker-hadoop$ sudo docker cp /home/user/ray_results/20221011_2359_arima_1000_with_knn_1665521974.0515058_/arima_1000_with_knn_1665521975.702219_200306_210816/error.txt namenode:/
+(base) user@user-ubuntu-pc:~/PycharmProjects/docker-hadoop$ sudo docker exec -it namenode bash
+root@79499e92701c:/# hdfs dfs -copyFromLocal error.txt /
+root@79499e92701c:/# hdfs dfs -head /error.txt
+root@79499e92701c:/# hdfs dfs -tail /error.txt
+root@79499e92701c:/# hdfs dfs -cat /error.txt
+root@79499e92701c:/# hdfs dfs -mkdir /new_location/
+root@79499e92701c:/# hdfs dfs -cp /error.txt /new_location/
+root@79499e92701c:/# hdfs dfs -setrep -R 1 /new_location/error.txt
+root@79499e92701c:/# hdfs dfs -setrep -R 2 /new_location/error.txt
+root@79499e92701c:/# hdfs fsck  /new_location/error.txt -files -blocks -locations
+root@79499e92701c:/# hdfs fsck -blockId blk_1073741834_1010
+
