@@ -7,8 +7,9 @@ def mapper():
         if len(line[9]) > 0 and line[9] != 'price':
             sys.stdout.write(f'{line[9]}\t1\n')
 
-    import pandas as pd
-    print(pd.read_csv('block3/AB_NYC_2019.csv')['price'].dropna().std())
+    # import pandas as pd
+    # print(pd.read_csv('block3/AB_NYC_2019.csv')['price'].dropna().mean())
+    # print(pd.read_csv('block3/AB_NYC_2019.csv')['price'].dropna().std())
 
 if __name__ == "__main__":
     mapper()
