@@ -1,0 +1,40 @@
+# Заливаем данные
+docker cp artists.csv hadoop-mapreduce-hive-server-1:/
+docker exec -it hadoop-mapreduce-hive-server-1 bash
+/opt/hive/bin/beeline -u jdbc:hive2://localhost:10000
+CREATE TABLE `artists`(`mbid` string, `artist_mb` string, `artist_lastfm` string, `country_mb` string, `country_lastfm` string, `tags_mb` string, `tags_lastfm` string, `listeners_lastfm` int, `scrobbles_lastfm` int, `ambiguous_artist` boolean) row format delimited fields terminated by ',';
+LOAD DATA LOCAL INPATH '/artists.csv' OVERWRITE INTO TABLE artists ROW FORMAT SERDE 'org.apache.hadoop.hive.serde2.OpenCSVSerde';
+
+# Исполнителя с максимальным числом скробблов
+select artist_mb, max(scrobbles_lastfm) max_scrobbles from artists group by artist_mb order by max_scrobbles desc limit 10;
+# +------------------------+----------------+
+# |       artist_mb        | max_scrobbles  |
+# +------------------------+----------------+
+# | The Beatles            | 517126254      |
+# | Radiohead              | 499548797      |
+# | Coldplay               | 360111850      |
+# | Muse                   | 344838631      |
+# | Arctic Monkeys         | 332306552      |
+# | Pink Floyd             | 313236119      |
+# | Linkin Park            | 294986508      |
+# | Red Hot Chili Peppers  | 293784041      |
+# | Lady Gaga              | 285469647      |
+# | Metallica              | 281172228      |
+# +------------------------+----------------+
+# Самый популярный тэг на ластфм
+select trim(itemsName) tag_lastfm, count(*) cnt from artists LATERAL VIEW explode(split(tags_lastfm, ';')) itemTable AS itemsName group by trim(itemsName) order by cnt desc limit 10;
+# +-----------------------+----------+
+# |      tag_lastfm       |   cnt    |
+# +-----------------------+----------+
+# |                       | 1084072  |
+# | seen live             | 99540    |
+# | rock                  | 73406    |
+# | electronic            | 70676    |
+# | under 2000 listeners  | 50827    |
+# | All                   | 50166    |
+# | pop                   | 48447    |
+# | indie                 | 47452    |
+# | alternative           | 43732    |
+# | experimental          | 40845    |
+# +-----------------------+----------+
+
