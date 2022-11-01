@@ -3,7 +3,7 @@ docker cp artists.csv hadoop-mapreduce-hive-server-1:/
 docker exec -it hadoop-mapreduce-hive-server-1 bash
 /opt/hive/bin/beeline -u jdbc:hive2://localhost:10000
 CREATE TABLE `artists`(`mbid` string, `artist_mb` string, `artist_lastfm` string, `country_mb` string, `country_lastfm` string, `tags_mb` string, `tags_lastfm` string, `listeners_lastfm` int, `scrobbles_lastfm` int, `ambiguous_artist` boolean) row format delimited fields terminated by ',';
-LOAD DATA LOCAL INPATH '/artists.csv' OVERWRITE INTO TABLE artists ROW FORMAT SERDE 'org.apache.hadoop.hive.serde2.OpenCSVSerde';
+LOAD DATA LOCAL INPATH '/artists.csv' OVERWRITE INTO TABLE artists;
 
 # Исполнителя с максимальным числом скробблов
 select artist_mb, max(scrobbles_lastfm) max_scrobbles from artists group by artist_mb order by max_scrobbles desc limit 10;
