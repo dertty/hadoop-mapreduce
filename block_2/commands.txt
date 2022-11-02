@@ -37,4 +37,11 @@ select trim(itemsName) tag_lastfm, count(*) cnt from artists LATERAL VIEW explod
 # | alternative           | 43732    |
 # | experimental          | 40845    |
 # +-----------------------+----------+
+# с)
+with t1 as (select trim(itemsName) as tag_lastfm, sum(listeners_lastfm) as listeners from artists LATERAL VIEW explode(split(tags_lastfm, ';')) itemTable AS itemsName group by trim(itemsName) order by listeners desc limit 10),
+t2 as (select trim(itemsName) as tag_lastfm, listeners_lastfm as listeners, artist_lastfm from artists LATERAL VIEW explode(split(tags_lastfm, ';')) itemTable AS itemsName),
+t3 as (select tag_lastfm, artist_lastfm, listeners, row_number() over(partition by tag_lastfm order by listeners desc) as rn from t2 where tag_lastfm in (select tag_lastfm from t1))
+select * from t3 where rn <= 10;
+d)
+select artist_mb, count(*) from artists group by artist_mb limit 10;
 
